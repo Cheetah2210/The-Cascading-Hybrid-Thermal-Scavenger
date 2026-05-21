@@ -3,76 +3,79 @@ import math
 
 def run_master_variable_theory():
     print(f"====================================================")
-    print(f"   CASCADING HYBRID THERMAL SCAVENGER MASTER THEORY ")
+    print(f"   ELEVATED THERMAL SCAVENGER ADVANCED MASTER THEORY")
     print(f"====================================================\n")
     
     # --- Input Constraints ---
     t_chips = 65.0       # Peak silicon temperature (°C)
     t_ambient = 15.0     # Cold sink baseline (°C)
-    total_nodes = 4      # Number of high-density server nodes in the cluster
+    total_nodes = 4      # High-density server nodes
     base_thermal_w = 4000.0 * total_nodes # 16kW total system heat output
     
     print(f"[Configuration Profile]")
     print(f"Target Chip Temp: {t_chips}°C | Ambient Air Sink: {t_ambient}°C")
-    print(f"System Footprint: {total_nodes} High-Density Blade Nodes")
-    print(f"Total Available Thermal Load: {base_thermal_w:.2f} W\n")
+    print(f"Total Raw Thermal Load: {base_thermal_w:.2f} W\n")
 
     # --------------------------------------------------------
-    # STEP 1: PHP Capillary Matrix & TEG Direct Harvest
+    # STEP 1: Active Solid-State Heat Pumping Layer
     # --------------------------------------------------------
-    dt_transport = 5.0   
-    t_teg_hot = t_chips
-    t_teg_cold = t_chips - dt_transport  # ~60°C entering the fluid stage
+    # We invest power to artificially elevate the fluid loop temperature
+    pumping_power_input_w = 450.0 * total_nodes  # Power spent running the pump
+    coefficient_of_performance = 3.2             # COP of advanced heat pump matrix
     
-    modules_per_node = 16
-    total_modules = modules_per_node * total_nodes
-    seebeck_alpha = 0.042  
-    internal_r = 1.1       
-    
-    dt_teg = t_teg_hot - t_teg_cold
-    v_open = seebeck_alpha * dt_teg
-    teg_power_w = ((v_open ** 2) / (4 * internal_r)) * total_modules
-    
-    print(f"[Layer 1: Core Solid-State Interface]")
-    print(f" -> PHP Status: Active Capillary Oscillation Regime")
-    print(f" -> Core TEG Direct DC Electricity Harvested: {teg_power_w:.2f} W\n")
+    # Total heat delivered to the fluid loop (Raw heat + electrical power input)
+    elevated_thermal_load_w = base_thermal_w + (pumping_power_input_w * coefficient_of_performance)
+    t_fluid_elevated = 125.0                     # Artificially elevated loop temperature (°C)
+
+    print(f"[Layer 1: Active Thermoelectric Pumping Matrix]")
+    print(f" -> Pumping Electrical Input:  {pumping_power_input_w:.2f} W")
+    print(f" -> Elevated Fluid Temperature: {t_fluid_elevated:.1f}°C (Up from 60°C)\n")
 
     # --------------------------------------------------------
-    # STEP 2: Multi-Stage Cascading Node Amplification
+    # STEP 2: Elevated Multi-Stage Cascading Amplification
     # --------------------------------------------------------
-    print(f"[Layer 2: Cascading Node Amplification Loop]")
+    print(f"[Layer 2: Elevated Cascading Node Amplification]")
     
-    # Each step down harvests a chunk of the remaining temperature gradient
-    # Stage 1 handles 60C->45C, Stage 2 handles 45C->30C, Stage 3 handles 30C->20C
+    # The elevated temperature allows for wider drops and much higher Carnot ceilings
     node_stages = [
-        {"name": "Stage 1 (High-Temp Loop)", "t_in": 60.0, "t_out": 45.0, "exergy_eff": 0.86},
-        {"name": "Stage 2 (Mid-Temp Loop)",  "t_in": 45.0, "t_out": 30.0, "exergy_eff": 0.88},
-        {"name": "Stage 3 (Low-Temp Loop)",  "t_in": 30.0, "t_out": 20.0, "exergy_eff": 0.90}
+        {"name": "Stage 1 (Superheated Loop)", "t_in": 125.0, "t_out": 80.0,  "exergy_eff": 0.86},
+        {"name": "Stage 2 (Mid-Temp Loop)",     "t_in": 80.0,  "t_out": 45.0,  "exergy_eff": 0.88},
+        {"name": "Stage 3 (Low-Temp Loop)",     "t_in": 45.0,  "t_out": 20.0,  "exergy_eff": 0.90}
     ]
     
-    total_amplified_fluid_harvest_w = 0
-    remaining_thermal_load_w = base_thermal_w - teg_power_w
+    total_fluid_harvest_w = 0
+    remaining_thermal_load_w = elevated_thermal_load_w
     
-    for i, stage in enumerate(node_stages, 1):
-        # Calculate dynamic Carnot limit for this specific step-down node
+    for stage in node_stages:
         th_k = stage["t_in"] + 273.15
         tc_k = stage["t_out"] + 273.15
         stage_carnot = 1.0 - (tc_k / th_k)
         
-        # Calculate power extracted at this node using the local fluid variable optimization
+        # Calculate power extracted from the compressed, high-density thermal profile
         stage_harvest_w = remaining_thermal_load_w * stage_carnot * stage["exergy_eff"]
-        total_amplified_fluid_harvest_w += stage_harvest_w
+        total_fluid_harvest_w += stage_harvest_w
         
         print(f" -> {stage['name']}:")
-        print(f"    * Thermal Input: {stage['t_in']}°C -> Output: {stage['t_out']}°C (ΔT: {stage['t_in'] - stage['t_out']}°C)")
-        print(f"    * Node Carnot Ceiling: {stage_carnot*100:.1f}% | Fluid Exergy Efficiency: {stage['exergy_eff']*100:.0f}%")
-        print(f"    * Node Power Harvested: {stage_harvest_w:.2f} W")
+        print(f"    * Thermal Input: {stage['t_in']}°C -> Output: {stage['t_out']}°C")
+        print(f"    * Node Carnot Ceiling: {stage_carnot*100:.1f}% | Node Harvest: {stage_harvest_w:.2f} W")
         
-        # Deduct harvested energy and drop the residual down as the trigger for the next node
         remaining_thermal_load_w -= stage_harvest_w
 
     # --------------------------------------------------------
-    # STEP 3: Old Baseline Comparison (Single-Stage Pure Fluid)
+    # SYSTEM CONSOLIDATION & NET YIELD
     # --------------------------------------------------------
-    # The old baseline ran the entire 60C to 15C drop through a single, unamplified loop
-    th_baseline_k = 60.0 + 273.15
+    # Net recovery accounts for the power spent running the active pump layer
+    net_recovered_power_w = total_fluid_harvest_w - pumping_power_input_w
+    recovery_percentage = (net_recovered_power_w / base_thermal_w) * 100
+
+    print(f"\n====================================================")
+    print(f"                  THEORETICAL VERDICT               ")
+    print(f"====================================================")
+    print(f"Gross Cascading Fluid Harvest:   {total_fluid_harvest_w:.2f} W")
+    print(f"Active Pumping Power Deduction: -{pumping_power_input_w:.2f} W")
+    print(f"Net Recovered Electrical Power:  {net_recovered_power_w:.2f} W")
+    print(f"Net Data Center Energy Return:   {recovery_percentage:.1f}%")
+    print(f"====================================================")
+
+if __name__ == "__main__":
+    run_master_variable_theory()
