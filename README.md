@@ -6,10 +6,11 @@ A multi-stage thermal recovery ecosystem cascading a solid-state magnetohydrodyn
 ## ⚖️ License
 
 Author: Emily 🌻 (Cheetahs Creations)  
-Licensed under the CERN Open Hardware Licence v1.2. See the cern_ohl_v_1_2.txt file for details.
+Licensed under the CERN Open Hardware Licence v1.2. See the `cern_ohl_v_1_2.txt` file for details.
 
+---
 
-## Project Description
+## 📖 Project Description
 
 The Cascading Hybrid Thermal Scavenger (CHTS) is an advanced, open-source thermal energy harvesting ecosystem designed to capture and repurpose low-to-mid grade waste heat from high-density server deployments and data center exhaust paths. 
 
@@ -20,3 +21,31 @@ Traditional thermal recovery systems often introduce parasitic mechanical load, 
 2. **Secondary Stage (Decoupled Bottoming Retrofit):** Captures residual lower-grade heat from the primary circuit and remaining ambient exhaust stream using a highly sensitive secondary refrigerant vapor loop. This optimizes total system exergy extraction across the entire thermal gradient.
 
 The entire architecture is designed as a modular, external "scavenger hood" retrofit, ensuring zero risk of fluid containment breach near sensitive computing hardware while operating autonomously to feed recycled power back into local infrastructure.
+
+---
+
+## 📊 Performance Architecture Tracking
+
+To mathematically validate and scale this physics framework, the `/variables` workspace tracks three distinct generations of optimization scripts. This lets developers simulate everything from baseline fluid thermodynamics up to our ultimate, high-yield facility loop.
+
+| Architecture Track | Core Physics & Operational Mechanisms | Net Facility Energy Return | Implementation Status | Primary Simulation |
+| :--- | :--- | :---: | :---: | :--- |
+| **Generation I** | Pulsating Heat Pipes (PHP), Seebeck Sandwich Arrays, Multi-Stage Zeotropic Fluid Cascades | **13.4%** | **Committed** | `variable_theory.py` |
+| **Generation II** | Near-Field Photonic Crystal Thermophotovoltaics (TPV), Micro-Vacuum Cavity Resonance | **41.3%** | **Committed** | `variable_theory_2.py` |
+| **Generation III** | External Facility Drop-In, Electro-Hydrodynamic (EHD) Phase Boundary Acceleration | **53.6%** | **Committed** | `variable_theory_3.py` |
+
+---
+
+## 🗂️ Repository Directory Structure
+
+```text
+The-Cascading-Hybrid-Thermal-Scavenger/
+├── hardware/                   # Physical CAD models, PCB routing, and housing blueprints
+└── variables/                  # Multi-variable simulation sandbox environment
+    ├── php_oscillations.py      # Capillary micro-channel active frequency code
+    ├── teg_sandwich.py         # Solid-state Seebeck thermoelectric modeling
+    ├── zeotropic_mix.py        # Binary fluid blend temperature glide & exergy math
+    ├── node_amplifiers.py      # Parametric cascade & fluidic switch dynamics
+    ├── variable_theory.py      # Master Script: Gen I Cascading Baseline (+13.4%)
+    ├── variable_theory_2.py    # Master Script: Gen II Near-Field Quantum TPV (+41.3%)
+    └── variable_theory_3.py    # Master Script: Gen III Plug-and-Play EHD Loop (+53.6%)
