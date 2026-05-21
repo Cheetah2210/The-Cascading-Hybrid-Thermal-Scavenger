@@ -6,7 +6,7 @@ A multi-stage thermal recovery ecosystem cascading a solid-state magnetohydrodyn
 ## ⚖️ License
 
 Author: Emily 🌻 (Cheetahs Creations)  
-Licensed under the CERN Open Hardware Licence v1.2. See the LICENSE file for details.
+Licensed under the CERN Open Hardware Licence v1.2. See the cern_ohl_v_1_2.txt file for details.
 
 
 ## Project Description
