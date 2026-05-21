@@ -23,7 +23,10 @@ for building the hardware components.
 * Designed for: N52 Neodymium blocks
 
 ## 4. Power Electrodes
-* Material: Copper or Gold-plated brass
-* Strips: 2 parallel plates
+* Material: Pure Oxygen-Free Copper
+* Plate Count: 2 parallel strips
 * Length: 50.0 mm
-* Location: Top and bottom internal surfaces
+* Width: 20.0 mm
+* Sheet Thickness: 1.0 mm
+* Mounting: Recessed flush into channel walls
+ 
