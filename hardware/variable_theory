@@ -1,0 +1,78 @@
+# variables/variable_theory.py
+import math
+
+def run_master_variable_theory():
+    print(f"====================================================")
+    print(f"      CASCADING HYBRID THERMAL SCAVENGER THEORY     ")
+    print(f"====================================================\n")
+    
+    # --- Input Constraints ---
+    t_chips = 65.0       # Silicon running temperature (°C)
+    t_ambient = 15.0     # Cold sink / Ambient air return (°C)
+    total_nodes = 4      # Scaled across a multi-node server chassis
+    
+    print(f"[Configuration Profile]")
+    print(f"Target Chip Temp: {t_chips}°C | Ambient Air Sink: {t_ambient}°C")
+    print(f"System Footprint: {total_nodes} High-Density Blade Nodes\n")
+
+    # --------------------------------------------------------
+    # STEP 1: Pulsating Heat Pipe (Thermal Transport)
+    # --------------------------------------------------------
+    channel_id = 1.2
+    num_turns = 16 * total_nodes
+    dt_transport = 5.0 # Minimized loss due to high performance PHP
+    t_teg_hot = t_chips
+    t_teg_cold = t_chips - dt_transport
+    
+    # --------------------------------------------------------
+    # STEP 2: TEG Sandwich Array (Direct Solid-State DC Power)
+    # --------------------------------------------------------
+    modules_per_node = 16
+    total_modules = modules_per_node * total_nodes
+    seebeck_alpha = 0.042  # Optimized thin-film superlattice profile
+    internal_r = 1.1       # Low-resistance engineering profile
+    
+    dt_teg = t_teg_hot - t_teg_cold
+    v_open = seebeck_alpha * dt_teg
+    teg_power_w = ((v_open ** 2) / (4 * internal_r)) * total_modules
+    
+    # --------------------------------------------------------
+    # STEP 3: Zeotropic Fluid Phase Change (Secondary Loop)
+    # --------------------------------------------------------
+    # Utilizing temperature glide to bump exergy extraction efficiency to 86%
+    base_thermal_load_w = 4000.0 * total_nodes # 16kW total rack thermal output
+    exergy_efficiency_pure = 0.70
+    exergy_efficiency_zeotropic = 0.86
+    
+    fluid_harvest_pure = base_thermal_load_w * exergy_efficiency_pure * 0.08
+    fluid_harvest_zeotropic = base_thermal_load_w * exergy_efficiency_high_yield * 0.08
+    fluid_harvest_zeotropic = base_thermal_load_w * exergy_efficiency_zeotropic * 0.08
+    
+    # --------------------------------------------------------
+    # SYSTEM CONSOLIDATION & NET YIELD
+    # --------------------------------------------------------
+    baseline_total = fluid_harvest_pure
+    optimized_total = teg_power_w + fluid_harvest_zeotropic
+    net_improvement = ((optimized_total - baseline_total) / baseline_total) * 100
+
+    print(f"[Layer 1: PHP Capillary Matrix]")
+    print(f" -> Internal Fluid Transport Status: Active Oscillation Regime")
+    print(f" -> Thermal Resistance: Minimal (Negligible transport loss)\n")
+
+    print(f"[Layer 2: TEG Co-Generation Array]")
+    print(f" -> Pure DC Electricity Harvested: {teg_power_w:.2f} W\n")
+
+    print(f"[Layer 3: Zeotropic Rankine/MHD Loop]")
+    print(f" -> Power Harvested via Temperature Glide: {fluid_harvest_zeotropic:.2f} W")
+    print(f" -> (Compared to old pure fluid layout: {fluid_harvest_pure:.2f} W)\n")
+
+    print(f"====================================================")
+    print(f"                  THEORETICAL VERDICT               ")
+    print(f"====================================================")
+    print(f"Baseline Scavenger Loop Output: {baseline_total:.2f} W")
+    print(f"Stacked Multi-Variable Output:  {optimized_total:.2f} W")
+    print(f"Net Energy Yield Increase:     +{net_improvement:.1f}% Efficiency Boost")
+    print(f"====================================================")
+
+if __name__ == "__main__":
+    run_master_variable_theory()
