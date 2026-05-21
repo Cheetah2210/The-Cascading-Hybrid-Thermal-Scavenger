@@ -1,38 +1,32 @@
 # variables/zeotropic_mix.py
 
-def calculate_exergy_gain(fluid_type, t_source_in, t_source_out, mass_flow):
+def evaluate_zeotropic_blend(refrigerant_a, refrigerant_b, ratio_a):
     """
-    Rough calculation to compare pure fluids vs zeotropic mixtures
-    t_source_in: Server coolant entry temp (C)
-    t_source_out: Server coolant exit temp (C)
+    Models temperature glide and heat exchanger optimization 
+    for binary zeotropic working fluids in the scavenger loops.
     """
-    # Specific heat capacity approximation (kJ/kg*K)
-    cp_coolant = 4.18 
+    ratio_b = 1.0 - ratio_a
+    print(f"--- Zeotropic Blend Optimization Profile ---")
+    print(f"Mixture Composition: {refrigerant_a} ({ratio_a*100:.0f}%) / {refrigerant_b} ({ratio_b*100:.0f}%)")
     
-    # Heat load from the servers (kW)
-    q_fluid = mass_flow * cp_coolant * (t_source_in - t_source_out)
-    
-    if fluid_type == "pure":
-        # Pure fluids lose energy due to the thermal mismatch (fixed boiling point)
-        heat_exchanger_efficiency = 0.70
-    elif fluid_type == "zeotropic_blend":
-        # Zeotropic mixtures glide with the temperature profile, capturing more exergy
-        heat_exchanger_efficiency = 0.84
+    # Standard pure fluids have 0°C glide (boil at a single flat temperature)
+    # Zeotropic mixtures experience a temperature glide during phase change
+    if refrigerant_a == "R-290" and refrigerant_b == "R-600a":
+        # Approximate temperature glide range based on standard mixtures
+        temperature_glide_c = 7.4 * (1.0 - abs(ratio_a - 0.6) * 2.0)
+        exergy_efficiency = 0.70 + (0.16 * (temperature_glide_c / 7.4))
     else:
-        heat_exchanger_efficiency = 0.50
+        temperature_glide_c = 2.0
+        exergy_efficiency = 0.72
+        
+    print(f" -> Phase Change Temperature Glide: {temperature_glide_c:.2f}°C")
+    print(f" -> Heat Exchanger Exergy Efficiency: {exergy_efficiency*100:.1f}%")
+    
+    # Calculate performance delta against baseline pure R-134a (Fixed point)
+    pure_baseline_eff = 0.70
+    performance_boost = ((exergy_efficiency - pure_baseline_eff) / pure_baseline_eff) * 100
+    print(f" -> Net Thermal Performance vs Pure Baseline: +{performance_boost:.1f}% Efficiency Gain")
 
-    net_thermal_harvest = q_fluid * heat_exchanger_efficiency
-    return net_thermal_harvest
-
-# --- Test Variables ---
-server_temp_in = 55.0   # 55°C straight off the chips
-server_temp_out = 45.0  # 45°C returning to the rack
-flow_rate = 2.5         # kg/s
-
-pure_yield = calculate_exergy_gain("pure", server_temp_in, server_temp_out, flow_rate)
-zeo_yield = calculate_exergy_gain("zeotropic_blend", server_temp_in, server_temp_out, flow_rate)
-
-print(f"--- Thermal Harvesting Sandbox Variables ---")
-print(f"Baseline Pure Fluid Thermal Harvest: {pure_yield:.2f} kW")
-print(f"Experimental Zeotropic Blend Harvest: {zeo_yield:.2f} kW")
-print(f"Net Gain from Temperature Glide Optimization: {((zeo_yield - pure_yield) / pure_yield) * 100:.1f}% increase")
+if __name__ == "__main__":
+    # Test the optimal 60/40 Propane-Isobutane variable profile
+    evaluate_zeotropic_blend("R-290", "R-600a", 0.60)
