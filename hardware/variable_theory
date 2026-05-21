@@ -1,4 +1,4 @@
-# variables/variable_theory.py
+# hardware/variable_theory.py (or variables/variable_theory.py)
 import math
 
 def run_master_variable_theory():
@@ -20,9 +20,9 @@ def run_master_variable_theory():
     # --------------------------------------------------------
     channel_id = 1.2
     num_turns = 16 * total_nodes
-    dt_transport = 5.0 # Minimized loss due to high performance PHP
+    dt_transport = 5.0   # Thermal drop across the PHP block
     t_teg_hot = t_chips
-    t_teg_cold = t_chips - dt_transport
+    t_teg_cold = t_chips - dt_transport  # Fluid absorbs heat here (~60°C)
     
     # --------------------------------------------------------
     # STEP 2: TEG Sandwich Array (Direct Solid-State DC Power)
@@ -39,13 +39,21 @@ def run_master_variable_theory():
     # --------------------------------------------------------
     # STEP 3: Zeotropic Fluid Phase Change (Secondary Loop)
     # --------------------------------------------------------
-    # Utilizing temperature glide to bump exergy extraction efficiency to 86%
-    base_thermal_load_w = 4000.0 * total_nodes # 16kW total rack thermal output
-    exergy_efficiency_pure = 0.70
-    exergy_efficiency_zeotropic = 0.86
+    base_thermal_load_w = 4000.0 * total_nodes # 16kW total rack output
     
-    fluid_harvest_pure = base_thermal_load_w * exergy_efficiency_pure * 0.08
-    fluid_harvest_zeotropic = base_thermal_load_w * exergy_efficiency_zeotropic * 0.08
+    # Dynamically compute conversion efficiency based on actual working fluid delta-T
+    # T_hot for the fluid is the temperature coming off the back of the TEG
+    th_fluid_k = t_teg_cold + 273.15
+    tc_fluid_k = t_ambient + 273.15
+    
+    carnot_limit = 1.0 - (tc_fluid_k / th_fluid_k)
+    
+    # Real-world system recovery factors relative to Carnot ceiling
+    exergy_efficiency_pure = 0.50       # High thermal mismatch
+    exergy_efficiency_zeotropic = 0.68  # Temperature glide advantage
+    
+    fluid_harvest_pure = base_thermal_load_w * carnot_limit * exergy_efficiency_pure
+    fluid_harvest_zeotropic = base_thermal_load_w * carnot_limit * exergy_efficiency_zeotropic
     
     # --------------------------------------------------------
     # SYSTEM CONSOLIDATION & NET YIELD
@@ -56,12 +64,13 @@ def run_master_variable_theory():
 
     print(f"[Layer 1: PHP Capillary Matrix]")
     print(f" -> Internal Fluid Transport Status: Active Oscillation Regime")
-    print(f" -> Thermal Resistance: Minimal (Negligible transport loss)\n")
+    print(f" -> Working Fluid Thermal Input: {t_teg_cold:.1f}°C\n")
 
     print(f"[Layer 2: TEG Co-Generation Array]")
     print(f" -> Pure DC Electricity Harvested: {teg_power_w:.2f} W\n")
 
     print(f"[Layer 3: Zeotropic Rankine/MHD Loop]")
+    print(f" -> Dynamic Loop Carnot Limit: {carnot_limit*100:.1f}%")
     print(f" -> Power Harvested via Temperature Glide: {fluid_harvest_zeotropic:.2f} W")
     print(f" -> (Compared to old pure fluid layout: {fluid_harvest_pure:.2f} W)\n")
 
