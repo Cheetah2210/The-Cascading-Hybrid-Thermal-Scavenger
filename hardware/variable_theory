@@ -1,86 +1,78 @@
-# hardware/variable_theory.py (or variables/variable_theory.py)
+# variables/variable_theory.py
 import math
 
 def run_master_variable_theory():
     print(f"====================================================")
-    print(f"      CASCADING HYBRID THERMAL SCAVENGER THEORY     ")
+    print(f"   CASCADING HYBRID THERMAL SCAVENGER MASTER THEORY ")
     print(f"====================================================\n")
     
     # --- Input Constraints ---
-    t_chips = 65.0       # Silicon running temperature (°C)
-    t_ambient = 15.0     # Cold sink / Ambient air return (°C)
-    total_nodes = 4      # Scaled across a multi-node server chassis
+    t_chips = 65.0       # Peak silicon temperature (°C)
+    t_ambient = 15.0     # Cold sink baseline (°C)
+    total_nodes = 4      # Number of high-density server nodes in the cluster
+    base_thermal_w = 4000.0 * total_nodes # 16kW total system heat output
     
     print(f"[Configuration Profile]")
     print(f"Target Chip Temp: {t_chips}°C | Ambient Air Sink: {t_ambient}°C")
-    print(f"System Footprint: {total_nodes} High-Density Blade Nodes\n")
+    print(f"System Footprint: {total_nodes} High-Density Blade Nodes")
+    print(f"Total Available Thermal Load: {base_thermal_w:.2f} W\n")
 
     # --------------------------------------------------------
-    # STEP 1: Pulsating Heat Pipe (Thermal Transport)
+    # STEP 1: PHP Capillary Matrix & TEG Direct Harvest
     # --------------------------------------------------------
-    channel_id = 1.2
-    num_turns = 16 * total_nodes
-    dt_transport = 5.0   # Thermal drop across the PHP block
+    dt_transport = 5.0   
     t_teg_hot = t_chips
-    t_teg_cold = t_chips - dt_transport  # Fluid absorbs heat here (~60°C)
+    t_teg_cold = t_chips - dt_transport  # ~60°C entering the fluid stage
     
-    # --------------------------------------------------------
-    # STEP 2: TEG Sandwich Array (Direct Solid-State DC Power)
-    # --------------------------------------------------------
     modules_per_node = 16
     total_modules = modules_per_node * total_nodes
-    seebeck_alpha = 0.042  # Optimized thin-film superlattice profile
-    internal_r = 1.1       # Low-resistance engineering profile
+    seebeck_alpha = 0.042  
+    internal_r = 1.1       
     
     dt_teg = t_teg_hot - t_teg_cold
     v_open = seebeck_alpha * dt_teg
     teg_power_w = ((v_open ** 2) / (4 * internal_r)) * total_modules
     
+    print(f"[Layer 1: Core Solid-State Interface]")
+    print(f" -> PHP Status: Active Capillary Oscillation Regime")
+    print(f" -> Core TEG Direct DC Electricity Harvested: {teg_power_w:.2f} W\n")
+
     # --------------------------------------------------------
-    # STEP 3: Zeotropic Fluid Phase Change (Secondary Loop)
+    # STEP 2: Multi-Stage Cascading Node Amplification
     # --------------------------------------------------------
-    base_thermal_load_w = 4000.0 * total_nodes # 16kW total rack output
+    print(f"[Layer 2: Cascading Node Amplification Loop]")
     
-    # Dynamically compute conversion efficiency based on actual working fluid delta-T
-    # T_hot for the fluid is the temperature coming off the back of the TEG
-    th_fluid_k = t_teg_cold + 273.15
-    tc_fluid_k = t_ambient + 273.15
+    # Each step down harvests a chunk of the remaining temperature gradient
+    # Stage 1 handles 60C->45C, Stage 2 handles 45C->30C, Stage 3 handles 30C->20C
+    node_stages = [
+        {"name": "Stage 1 (High-Temp Loop)", "t_in": 60.0, "t_out": 45.0, "exergy_eff": 0.86},
+        {"name": "Stage 2 (Mid-Temp Loop)",  "t_in": 45.0, "t_out": 30.0, "exergy_eff": 0.88},
+        {"name": "Stage 3 (Low-Temp Loop)",  "t_in": 30.0, "t_out": 20.0, "exergy_eff": 0.90}
+    ]
     
-    carnot_limit = 1.0 - (tc_fluid_k / th_fluid_k)
+    total_amplified_fluid_harvest_w = 0
+    remaining_thermal_load_w = base_thermal_w - teg_power_w
     
-    # Real-world system recovery factors relative to Carnot ceiling
-    exergy_efficiency_pure = 0.50       # High thermal mismatch
-    exergy_efficiency_zeotropic = 0.68  # Temperature glide advantage
-    
-    fluid_harvest_pure = base_thermal_load_w * carnot_limit * exergy_efficiency_pure
-    fluid_harvest_zeotropic = base_thermal_load_w * carnot_limit * exergy_efficiency_zeotropic
-    
+    for i, stage in enumerate(node_stages, 1):
+        # Calculate dynamic Carnot limit for this specific step-down node
+        th_k = stage["t_in"] + 273.15
+        tc_k = stage["t_out"] + 273.15
+        stage_carnot = 1.0 - (tc_k / th_k)
+        
+        # Calculate power extracted at this node using the local fluid variable optimization
+        stage_harvest_w = remaining_thermal_load_w * stage_carnot * stage["exergy_eff"]
+        total_amplified_fluid_harvest_w += stage_harvest_w
+        
+        print(f" -> {stage['name']}:")
+        print(f"    * Thermal Input: {stage['t_in']}°C -> Output: {stage['t_out']}°C (ΔT: {stage['t_in'] - stage['t_out']}°C)")
+        print(f"    * Node Carnot Ceiling: {stage_carnot*100:.1f}% | Fluid Exergy Efficiency: {stage['exergy_eff']*100:.0f}%")
+        print(f"    * Node Power Harvested: {stage_harvest_w:.2f} W")
+        
+        # Deduct harvested energy and drop the residual down as the trigger for the next node
+        remaining_thermal_load_w -= stage_harvest_w
+
     # --------------------------------------------------------
-    # SYSTEM CONSOLIDATION & NET YIELD
+    # STEP 3: Old Baseline Comparison (Single-Stage Pure Fluid)
     # --------------------------------------------------------
-    baseline_total = fluid_harvest_pure
-    optimized_total = teg_power_w + fluid_harvest_zeotropic
-    net_improvement = ((optimized_total - baseline_total) / baseline_total) * 100
-
-    print(f"[Layer 1: PHP Capillary Matrix]")
-    print(f" -> Internal Fluid Transport Status: Active Oscillation Regime")
-    print(f" -> Working Fluid Thermal Input: {t_teg_cold:.1f}°C\n")
-
-    print(f"[Layer 2: TEG Co-Generation Array]")
-    print(f" -> Pure DC Electricity Harvested: {teg_power_w:.2f} W\n")
-
-    print(f"[Layer 3: Zeotropic Rankine/MHD Loop]")
-    print(f" -> Dynamic Loop Carnot Limit: {carnot_limit*100:.1f}%")
-    print(f" -> Power Harvested via Temperature Glide: {fluid_harvest_zeotropic:.2f} W")
-    print(f" -> (Compared to old pure fluid layout: {fluid_harvest_pure:.2f} W)\n")
-
-    print(f"====================================================")
-    print(f"                  THEORETICAL VERDICT               ")
-    print(f"====================================================")
-    print(f"Baseline Scavenger Loop Output: {baseline_total:.2f} W")
-    print(f"Stacked Multi-Variable Output:  {optimized_total:.2f} W")
-    print(f"Net Energy Yield Increase:     +{net_improvement:.1f}% Efficiency Boost")
-    print(f"====================================================")
-
-if __name__ == "__main__":
-    run_master_variable_theory()
+    # The old baseline ran the entire 60C to 15C drop through a single, unamplified loop
+    th_baseline_k = 60.0 + 273.15
