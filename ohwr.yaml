@@ -1,0 +1,14 @@
+# Open Hardware Repository Metadata Manifest
+manifest-version: 1.0
+project:
+  name: "The Cascading Hybrid Thermal Scavenger"
+  short-description: "Multi-stage thermal recovery ecosystem cascading a solid-state MHD loop with a decoupled secondary vapor cycle."
+  author: "Emily 🌻 (Cheetahs Creations)"
+  homepage: "https://github.com/Cheetah2210/The-Cascading-Hybrid-Thermal-Scavenger"
+  license: "CERN-OHL-W-v1.2"
+  status: "alpha"
+  tags:
+    - thermal-scavenger
+    - magnetohydrodynamics
+    - data-center
+    - open-source-hardware
