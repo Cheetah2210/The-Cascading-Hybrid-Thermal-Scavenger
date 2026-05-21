@@ -30,3 +30,23 @@ for building the hardware components.
 * Sheet Thickness: 1.0 mm
 * Mounting: Recessed flush into channel walls
  
+## 5. Stage 2 Heat Exchanger Block
+* Type: Micro-channel flat plate
+* Material: Brazed Aluminum or Copper
+* Core Length: 150.0 mm
+* Core Width: 150.0 mm
+* Core Depth: 25.0 mm
+* Placement: Immediately following Stage 1
+
+## 6. Secondary Refrigerant Lines
+* Material: Rigid copper tubing
+* Outer Diameter: 6.35 mm (1/4 inch)
+* Wall Thickness: 0.71 mm
+* Fitting Type: Standard brass compression
+
+## 7. Low-Pressure Expansion Valve
+* Type: Fixed-orifice capillary block
+* Orifice Size: 0.5 mm
+* Material: Brass body
+* Function: Controls secondary vapor drop
+
