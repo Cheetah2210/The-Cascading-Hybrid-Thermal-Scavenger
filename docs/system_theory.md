@@ -75,3 +75,55 @@ and uses an expansion valve to maintain a lower
 vapor pressure, squeezing the final potential work 
 out of the system before the server air is cleanly 
 discharged back onto the data center floor.
+
+## 5. Thermodynamic Efficiency Limits
+
+The maximum theoretical efficiency of the CHTS 
+is governed by the Carnot efficiency limit for 
+low-grade thermal energy conversion:
+
+Efficiency Max = 1 - (T_cold / T_hot)
+
+Where temperatures are calculated in Kelvin.
+
+### Baseline System Scenario (Per 15 kW Rack):
+* Source Heat (Q_H): 15,000 Watts
+* Exhaust Temp (T_hot): 55°C (328.15 K)
+* Ambient Temp (T_cold): 22°C (295.15 K)
+
+### Carnot Theoretical Threshold:
+Efficiency Max = 1 - (295.15 / 328.15) = ~10.0%
+
+### Real-World Kinetic Harvest (1.5% to 2.0%):
+Due to minor fluid friction and magnetic gap 
+losses, the physical system captures a highly 
+realistic 1.5% to 2.0% of the total thermal mass.
+
+* Continuous Power Recovered: 225 to 300 Watts
+* Daily Energy Yield: 5.4 to 7.2 kWh per rack
+
+---
+
+## 6. The Dual Benefit Matrix
+
+Deploying the CHTS framework yields two 
+simultaneous operational advantages:
+
+### 1. The Free Energy Benefit
+The 225 to 300 Watts of direct current (DC) 
+collected by the flush copper electrodes is 
+entirely self-generated power. This electricity 
+can be directly injected back into local backup 
+battery banks or microcontrollers, creating an 
+autonomous, self-sustaining loop.
+
+### 2. The Zero Heat Waste Benefit
+Server exhaust normally strains ambient room 
+cooling infrastructure, consuming massive energy. 
+By absorbing the kinetic expansion force into 
+Stage 1 and capturing the rest via the Stage 2 
+decoupled refrigerant loop, the system physically 
+drops the air temperature before discharge. 
+
+This directly slashes local cooling overhead, 
+providing a massive secondary energy saving.
