@@ -55,3 +55,16 @@ Because our optimized fluid cascade utilizes highly efficient working fluids, ab
 ---
 *An open-hardware sustainability initiative by Cheetahs Creations.*
 *Governed under file reference: hardware/SPECIFICATIONS.md*
+
+## 🔄 5. Enterprise Topology, Redundancy & Hot-Swapping
+
+To ensure 99.999% facility uptime, the EHD containment modules must never act as a single point of failure for the primary cooling loop. The physical deployment requires a parallel-path manifold topology.
+
+### N+1 Parallel Manifold Configuration
+* **System Layout:** Instead of a single inline pipe, the fluid stream is split across an $N+1$ manifold array of smaller, parallel EHD conduit modules (where $N$ satisfies the maximum thermal load volumetric flow rate, and $+1$ acts as an active, burning standby unit).
+* **Isolation Valve Assemblies:** Each individual EHD module is bookended by automated, high-pressure motorized ball valves. 
+
+### Zero-Downtime Hot-Swapping Maintenance
+1. **Pneumatic Isolation:** If an internal optical bubble sensor or micro-amp current monitor flags a cleaning interval or electrode degradation inside Module B, the central PLC controller triggers the isolation valves for that specific runner.
+2. **Diverted Flow:** The volumetric flow is instantly distributed across the remaining active modules and the $+1$ standby runner.
+3. **Physical Serviceability:** The isolated module can be safely unbolted from its PEEK flanges, cleaned or swapped out, and re-installed without a single drop in compute cluster performance or server room temperature fluctuations.
