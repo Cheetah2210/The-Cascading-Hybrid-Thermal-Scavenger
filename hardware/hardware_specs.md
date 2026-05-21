@@ -50,3 +50,11 @@ for building the hardware components.
 * Material: Brass body
 * Function: Controls secondary vapor drop
 
+## 8. Fluid Loop Mechanics & Capacity
+
+* **Primary Fluid Mix:** Immiscible binary suspension (Low-boiling driver + conductive suspension)
+* **Total Static Fluid Charge:** 25.0 mL per channel core
+* **Optimal Mass Flow Rate:** 0.015 kg/second
+* **Target Fluid Velocity:** Calculated dynamically via nozzle expansion models
+* **Expansion Reservoir Volume:** 50.0 mL 
+* **Reservoir Function:** Provides a 2x safety buffer for vapor phase-change expansion, preventing over-pressurization inside the 3D block.
