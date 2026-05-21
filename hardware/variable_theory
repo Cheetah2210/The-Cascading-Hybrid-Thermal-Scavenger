@@ -45,7 +45,6 @@ def run_master_variable_theory():
     exergy_efficiency_zeotropic = 0.86
     
     fluid_harvest_pure = base_thermal_load_w * exergy_efficiency_pure * 0.08
-    fluid_harvest_zeotropic = base_thermal_load_w * exergy_efficiency_high_yield * 0.08
     fluid_harvest_zeotropic = base_thermal_load_w * exergy_efficiency_zeotropic * 0.08
     
     # --------------------------------------------------------
