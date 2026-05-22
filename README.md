@@ -26,13 +26,14 @@ The entire architecture is designed as a modular, external "scavenger hood" retr
 
 ## 📊 Performance Architecture Tracking
 
-To mathematically validate and scale this physics framework, the `/variables` workspace tracks three distinct generations of optimization scripts. This lets developers simulate everything from baseline fluid thermodynamics up to our ultimate, high-yield facility loop.
+To mathematically validate and scale this physics framework, the `/variables` workspace tracks the distinct generations of optimization scripts. This lets developers simulate everything from baseline fluid thermodynamics up to our ultimate, high-yield amplified facility loop.
 
-| Architecture Track | Core Physics & Operational Mechanisms | Net Facility Energy Return | Implementation Status | Primary Simulation |
+| Architecture Track | Core Physics & Operational Mechanisms | Net Facility Energy Return | Implementation Status | Primary Simulation / Document |
 | :--- | :--- | :---: | :---: | :--- |
-| **Generation I** | Pulsating Heat Pipes (PHP), Seebeck Sandwich Arrays, Multi-Stage Zeotropic Fluid Cascades | **13.4%** | **Committed** | `variable_theory.py` |
-| **Generation II** | Near-Field Photonic Crystal Thermophotovoltaics (TPV), Micro-Vacuum Cavity Resonance | **41.3%** | **Committed** | `variable_theory_2.py` |
-| **Generation III** | External Facility Drop-In, Electro-Hydrodynamic (EHD) Phase Boundary Acceleration | **53.6%** | **Committed** | `variable_theory_3.py` |
+| **Generation I** | Pulsating Heat Pipes (PHP), Seebeck Sandwich Arrays, Multi-Stage Zeotropic Fluid Cascades | **13.4%** | **Committed** | `variables/variable_theory.py` |
+| **Generation II** | Near-Field Photonic Crystal Thermophotovoltaics (TPV), Micro-Vacuum Cavity Resonance | **41.3%** | **Committed** | `variables/variable_theory_2.py` |
+| **Generation III** | External Facility Drop-In, Electro-Hydrodynamic (EHD) Phase Boundary Acceleration | **53.6%** | **Committed** | `variables/variable_theory_3.py` |
+| **Gen III + Amplifiers** | Fluidic Vector Deflection, Ranque-Hilsch Vortex Stratification, Piezo Acoustic Resonance | **69.9%** 🚀 | **Committed** | `variables/node_amplifiers.py` |
 
 ---
 
@@ -41,11 +42,12 @@ To mathematically validate and scale this physics framework, the `/variables` wo
 ```text
 The-Cascading-Hybrid-Thermal-Scavenger/
 ├── hardware/                   # Physical CAD models, PCB routing, and housing blueprints
+│   └── SPECIFICATIONS.md      # Physical housing, electrical tolerances, N+1 manifold layout
 └── variables/                  # Multi-variable simulation sandbox environment
-    ├── php_oscillations.py      # Capillary micro-channel active frequency code
+    ├── php_oscillations.py     # Capillary micro-channel active frequency code
     ├── teg_sandwich.py         # Solid-state Seebeck thermoelectric modeling
     ├── zeotropic_mix.py        # Binary fluid blend temperature glide & exergy math
-    ├── node_amplifiers.py      # Parametric cascade & fluidic switch dynamics
+    ├── node_amplifiers.py      # Parametric cascade & fluidic switch dynamics (+69.9% simulation)
     ├── variable_theory.py      # Master Script: Gen I Cascading Baseline (+13.4%)
     ├── variable_theory_2.py    # Master Script: Gen II Near-Field Quantum TPV (+41.3%)
     └── variable_theory_3.py    # Master Script: Gen III Plug-and-Play EHD Loop (+53.6%)
