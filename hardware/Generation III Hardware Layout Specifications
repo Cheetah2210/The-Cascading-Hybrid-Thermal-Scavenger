@@ -1,0 +1,36 @@
+# Generation III Hardware Layout Specifications
+
+This document defines the physical framing, plumbing dimensions, and spatial tolerances for the Generation III Cascading Hybrid Thermal Scavenger (CHTS) external facility drop-in module. These standards ensure proper integration with data center hot-aisle containment plenums while maintaining N+1 manifold redundancy.
+
+---
+
+## 1. Framing Boundaries & Structural Dimensions
+
+The exterior chassis forms a rigid, sealed canopy that sits directly over the server exhaust path.
+
+* **Chassis Footprint:** $2000\text{ mm} \times 2000\text{ mm}$ (Width $\times$ Depth).
+* **Vertical Height Profiles:**
+  * **EHD Ionization Zone:** Baseline to $+100\text{ mm}$.
+  * **Primary MHD Core Block:** $+100\text{ mm}$ to $+500\text{ mm}$.
+  * **Secondary Condenser Deck:** $+500\text{ mm}$ to $+650\text{ mm}$.
+* **Plenum Intake Flare:** The bottom flange expands outward at a $15^\circ$ angle to a $2150\text{ mm} \times 2150\text{ mm}$ footprint. This creates a static pressure stabilization pocket to prevent server fan backpressure.
+* **Structural Frame Material:** $40\text{ mm} \times 40\text{ mm}$ T-slot extruded aluminum (6061-T6) with continuous dual-channel corner gussets.
+
+---
+
+## 2. N+1 Manifold & Pipe Dimensions
+
+The fluidic network is split across four parallel MHD cores to sustain facility uptime during isolated channel maintenance.
+
+### Main Headers
+* **Inlet/Return Main Line Diameter:** $50\text{ mm}$ (2-inch Nominal) Schedule 40 Stainless Steel (316L).
+* **Header Placement:** Left and right perimeter channels of the lower aluminum frame.
+
+### Core Branch Lines
+* **Branch Line Diameter:** $19\text{ mm}$ ($\frac{3}{4}$-inch Nominal) Braided Stainless Steel flexible hose lines (to absorb micro-vibrations from phase change acceleration).
+* **Isolation Valves:** Eight (8) $12\text{V}$ DC motorized full-port stainless steel ball valves ($19\text{ mm}$ ID) fitted directly at the inlet and outlet interfaces of each block.
+
+### Spatial Spacing & Array Centerlines
+* **Total Channel Core Span:** $1600\text{ mm}$ centered within the $2000\text{ mm}$ frame boundary.
+* **Inter-Block Centerline Distance:** Exactly $400\text{ mm}$ spacing between the longitudinal centers of adjacent MHD channel blocks.
+* **Maintenance Clearance:** A minimum $120\text{ mm}$ clear horizontal window must be preserved between the external walls of adjacent blocks to allow manual access to the motorized valve actuators.
