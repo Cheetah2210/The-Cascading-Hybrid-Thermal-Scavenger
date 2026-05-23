@@ -1,4 +1,4 @@
-# variables/GEN III node_amplifiers.py
+# variables/GEN_III_node_amplifiers.py
 
 import math
 import logging
