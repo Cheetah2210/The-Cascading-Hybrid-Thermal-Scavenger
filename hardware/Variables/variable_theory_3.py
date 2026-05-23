@@ -1,92 +1,118 @@
 # variables/variable_theory_3.py
+
 import math
+import logging
 
-def run_generation_3_ehd_theory():
-    print(f"====================================================")
-    print(f"   EHD-ENHANCED HIGH-YIELD SCAVENGER GRID GEN III   ")
-    print(f"====================================================\n")
-    
-    # --- Enterprise Scaling Constraints ---
-    t_coolant_in = 65.0   # Facility-side hot coolant arrival loop (°C)
-    t_ambient = 15.0      # External cooling tower sink (°C)
-    total_nodes = 4       
-    base_thermal_w = 4000.0 * total_nodes # 16kW raw facility heat load
-    
-    print(f"[Enterprise Profile: Plug-and-Play Facility Loop]")
-    print(f"Incoming Facility Coolant: {t_coolant_in}°C | Sink: {t_ambient}°C")
-    print(f"Total Thermal Energy Handled: {base_thermal_w:.2f} W\n")
+# Set up logging for physics engine calculations
+logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-    # --------------------------------------------------------
-    # STEP 1: Electro-Hydrodynamic (EHD) Boiling Maximizer
-    # --------------------------------------------------------
-    # Using low-current electric fields to artificially remove fluid boundary layer resistance
-    ehd_overhead_w = 12.0 * total_nodes   # Negligible power required for voltage fields
-    ehd_heat_transfer_multiplier = 3.5    # 350% increase in phase change velocity
-    
-    # EHD drastically lowers the thermal drop needed to drive the cycle
-    t_cascade_in = t_coolant_in - 1.5     # Only 1.5°C drop across interface due to EHD velocity
-    
-    print(f"[Layer 1: External EHD Phase-Change Maximizer]")
-    print(f" -> Electrical Overhead:       {ehd_overhead_w:.2f} W (Micro-Amps at High Voltage)")
-    print(f" -> Active Phase Acceleration: {ehd_heat_transfer_multiplier * 100:.0f}% Velocity Multiplier")
-    print(f" -> Cascade Operational Input: {t_cascade_in:.1f}°C\n")
-
-    # --------------------------------------------------------
-    # STEP 2: Active Solid-State Thermal Uplift
-    # --------------------------------------------------------
-    pumping_power_input_w = 280.0 * total_nodes # Reduced pump restriction due to EHD fluidity
-    coefficient_of_performance = 3.8            # Enhanced COP due to maximized heat transfer
-    
-    elevated_thermal_load_w = base_thermal_w + (pumping_power_input_w * coefficient_of_performance)
-    t_fluid_elevated = 130.0                    # Elevated temperature threshold (°C)
-
-    print(f"[Layer 2: External Heat Uplift Stage]")
-    print(f" -> Active Pumping Power:      {pumping_power_input_w:.2f} W")
-    print(f" -> Superheated Fluid Output:  {t_fluid_elevated:.1f}°C\n")
-
-    # --------------------------------------------------------
-    # STEP 3: EHD-Driven Multi-Stage Cascading Expansion Nodes
-    # --------------------------------------------------------
-    print(f"[Layer 3: EHD-Enhanced Fluidic Node Cascade]")
-    
-    # EHD allows our exergy extraction efficiencies to climb into unprecedented bounds
-    node_stages = [
-        {"name": "Stage 1 (Hyper-Dense Loop)", "t_in": 130.0, "t_out": 85.0,  "exergy_eff": 0.94},
-        {"name": "Stage 2 (Mid-Range Cascade)", "t_in": 85.0,  "t_out": 45.0,  "exergy_eff": 0.95},
-        {"name": "Stage 3 (Low-Grade Tail)",    "t_in": 45.0,  "t_out": 20.0,  "exergy_eff": 0.96}
-    ]
-    
-    total_fluid_cascade_harvest_w = 0
-    remaining_fluid_thermal_w = elevated_thermal_load_w
-    
-    for stage in node_stages:
-        th_k = stage["t_in"] + 273.15
-        tc_k = stage["t_out"] + 273.15
-        stage_carnot = 1.0 - (tc_k / th_k)
+class GenIIIEHDLoopSimulator:
+    """
+    Simulates Generation III physics: Electro-Hydrodynamic (EHD) phase boundary 
+    acceleration and Magnetohydrodynamic (MHD) power generation.
+    """
+    def __init__(self, magnetic_flux_density=1.4, channel_width_mm=15.0):
+        self.B = magnetic_flux_density  # Magnetic field strength in Tesla (Halbach Array)
+        self.w = channel_width_mm / 1000.0  # Convert channel width to meters
         
-        # Power harvested via high-velocity EHD phase expansion
-        stage_harvest_w = remaining_fluid_thermal_w * stage_carnot * stage["exergy_eff"]
-        total_fluid_cascade_harvest_w += stage_harvest_w
+        # Physical and electrical constants
+        self.permittivity_0 = 8.854e-12  # Vacuum permittivity (F/m)
+        self.dielectric_constant = 2.1   # Relative permittivity of working fluid blend
+        self.fluid_density = 1250.0      # Liquid-vapor phase average density (kg/m³)
+
+    def calculate_ehd_acceleration(self, applied_voltage_kv, ion_mobility=1.8e-7):
+        """
+        Calculates the electrohydrodynamic body force and subsequent fluid 
+        velocity increase derived from phase boundary ionization.
+        """
+        voltage_v = applied_voltage_kv * 1000.0
+        permittivity = self.permittivity_0 * self.dielectric_constant
         
-        print(f" -> {stage['name']}: Node Harvest = {stage_harvest_w:.2f} W")
-        remaining_fluid_thermal_w -= stage_harvest_w
+        # Electric field strength (V/m) across the 100mm ionization gap boundary
+        electric_field = voltage_v / 0.10  
+        
+        # EHD Coulomb force density (N/m³): f = 0.5 * permittivity * E^2
+        ehd_force_density = 0.5 * permittivity * (electric_field ** 2)
+        
+        # Velocity scaling from EHD acceleration: v = sqrt((2 * f_ehd * distance) / density)
+        # Assuming acceleration occurs over the length of the ionization grid zone (100mm)
+        delta_velocity = math.sqrt((2.0 * ehd_force_density * 0.10) / self.fluid_density)
+        
+        return {
+            "electric_field_v_m": electric_field,
+            "force_density_n_m3": ehd_force_density,
+            "velocity_gain_m_s": delta_velocity
+        }
 
-    # --------------------------------------------------------
-    # TOTAL SYSTEM CONSOLIDATION
-    # --------------------------------------------------------
-    total_system_overhead_w = pumping_power_input_w + ehd_overhead_w
-    net_recovered_electrical_w = total_fluid_cascade_harvest_w - total_system_overhead_w
-    net_data_center_return_pct = (net_recovered_electrical_w / base_thermal_w) * 100
+    def simulate_mhd_power_generation(self, baseline_velocity, ehd_metrics, fluid_conductivity=0.15):
+        """
+        Models the solid-state MHD channel extraction, computing open-circuit voltage,
+        internal resistance, and net power generated per micro-channel core.
+        """
+        # Net fluid velocity equals boiling expansion baseline velocity plus EHD acceleration
+        total_velocity = baseline_velocity + ehd_metrics["velocity_gain_m_s"]
+        
+        # Faraday's Law of Induction for MHD channels: V_oc = B * w * v
+        open_circuit_voltage = self.B * self.w * total_velocity
+        
+        # Internal resistance of the moving fluid layer across flush copper electrodes
+        # Assuming channel depth of 10mm and length of 400mm
+        channel_length = 0.40
+        channel_depth = 0.01
+        internal_resistance = self.w / (fluid_conductivity * channel_length * channel_depth)
+        
+        # Maximum power extraction occurs at matched load conditions (R_load = R_internal)
+        # P_max = V_oc^2 / (4 * R_internal)
+        max_power_output_w = (open_circuit_voltage ** 2) / (4.0 * internal_resistance)
+        
+        return {
+            "total_fluid_velocity_m_s": total_velocity,
+            "open_circuit_voltage_v": open_circuit_voltage,
+            "internal_resistance_ohms": internal_resistance,
+            "power_output_watts": max_power_output_w
+        }
 
-    print(f"\n====================================================")
-    print(f"             GEN III FACILITY VERDICT               ")
-    print(f"====================================================")
-    print(f"Gross Fluidic Cascade Harvest:   {total_fluid_cascade_harvest_w:.2f} W")
-    print(f"Total Facility System Overhead: -{total_system_overhead_w:.2f} W")
-    print(f"----------------------------------------------------")
-    print(f"Net Recovered Facility Power:    {net_recovered_electrical_w:.2f} W")
-    print(f"Total Net Energy Return Metric:  {net_data_center_return_pct:.1f}%")
-    print(f"====================================================")
+    def execute_gen3_analysis(self, baseline_velocity_m_s, applied_voltage_kv, exergy_pool_kj_kg):
+        """Runs a unified multi-physics simulation pass for the Gen III architecture."""
+        # 1. Core Physics Processing
+        ehd_res = self.calculate_ehd_acceleration(applied_voltage_kv)
+        mhd_res = self.simulate_mhd_power_generation(baseline_velocity_m_s, ehd_res)
+        
+        # 2. Plant-Level Redundancy Scaling (4 parallel blocks)
+        total_facility_power_w = mhd_res["power_output_watts"] * 4
+        
+        # 3. Efficiency Evaluation relative to available thermodynamic exergy pool
+        mass_flow_rate = 0.45  # kg/s total system mass throughput
+        available_power_w = exergy_pool_kj_kg * mass_flow_rate * 1000.0
+        net_efficiency = (total_facility_power_w / available_power_w) * 100.0
 
+        # Log metrics to workspace console
+        logging.info("=========================================================")
+        logging.info(" MASTER SIMULATION: GENERATION III PLUG-AND-PLAY EHD LOOP")
+        logging.info("=========================================================")
+        logging.info(f"Applied Ionization Potential: {applied_voltage_kv:.2f} kV")
+        logging.info(f"EHD Field Intensity          : {ehd_res['electric_field_v_m']:.2e} V/m")
+        logging.info(f"EHD Forced Velocity Boost    : +{ehd_res['velocity_gain_m_s']:.2f} m/s")
+        logging.info(f"Total Accelerated Velocity   : {mhd_res['total_fluid_velocity_m_s']:.2f} m/s")
+        logging.info(f"MHD Open Circuit Voltage     : {mhd_res['open_circuit_voltage_v']:.4f} V")
+        logging.info(f"Single Channel Core Output   : {mhd_res['power_output_watts']:.2f} W")
+        logging.info(f"Total Facility Return (4x)   : {total_facility_power_w:.2f} W")
+        logging.info(f"Target Gen III Efficiency    : {net_efficiency:.1f}% (Benchmark: 53.6%)")
+        logging.info("=========================================================\n")
+        
+        return net_efficiency
+
+# ---------------------------------------------------------------------------
+# Test Verification Run
+# ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    run_generation_3_ehd_theory()
+    # Initialize simulation environment with standard 1.4 Tesla Halbach setup
+    simulator = GenIIIEHDLoopSimulator(magnetic_flux_density=1.4, channel_width_mm=15.0)
+    
+    # Run simulation using 3.2 m/s vapor glide baseline from zeotropic_mix.py
+    # and a 125.4 kJ/kg exergy pool pool calculation
+    simulator.execute_gen3_analysis(
+        baseline_velocity_m_s=3.2, 
+        applied_voltage_kv=15.0, 
+        exergy_pool_kj_kg=125.4
+    )
