@@ -46,7 +46,7 @@ The physics engine is designed to handle high-temperature thermal gradients, mak
 For technical specifications, fluid variable mapping, and material adjustment profiles across alternative industries, please see the complete [Alternative Applications Guide](APPLICATIONS.md).
 
 Target alternative sectors include:
-* **High-Temperature Industrial Flues:** Blast furnaces, glass manufacturing, and ceramic kilns ($300^\circ\text{C}$ – $700^\circ\text{C}$+).
+* **High-Temperature Industrial Flues:** Blast furnaces, glass manufacturing, and ceramic kilns.
 * **Heavy-Duty Transportation:** Solid-state co-generation jackets for marine shipping and diesel rail exhaust.
 * **Low-Enthalpy Geothermal Wells:** Open-channel mineral brine harvesting with zero turbine blade fouling.
 * **Concentrated Solar Thermal (CST):** True quantum-to-hydrodynamic hybrid harvesting loops.
