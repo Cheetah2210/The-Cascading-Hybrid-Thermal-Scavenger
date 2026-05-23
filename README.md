@@ -33,7 +33,8 @@ To mathematically validate and scale this physics framework, the `/variables` wo
 | **Generation I** | Pulsating Heat Pipes (PHP), Seebeck Sandwich Arrays, Multi-Stage Zeotropic Fluid Cascades | **13.4%** | **Committed** | `variables/variable_theory.py` |
 | **Generation II** | Near-Field Photonic Crystal Thermophotovoltaics (TPV), Micro-Vacuum Cavity Resonance | **41.3%** | **Committed** | `variables/variable_theory_2.py` |
 | **Generation III** | External Facility Drop-In, Electro-Hydrodynamic (EHD) Phase Boundary Acceleration | **53.6%** | **Committed** | `variables/variable_theory_3.py` |
-| **Gen III + Amplifiers** | Fluidic Vector Deflection, Ranque-Hilsch Vortex Stratification, Piezo Acoustic Resonance | **69.9%** 🚀 | **Committed** | `variables/node_amplifiers.py` |
+| **Gen III Ultra (Max)** | Graphene Slip, Halbach Magnetic Arrays, Dynamic Glide Multipliers, Vortex Amplification | **80.4%** 👑 | **Committed** | `variables/node_amplifiers.py` |
+
 
 ---
 
