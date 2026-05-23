@@ -14,7 +14,7 @@ Licensed under the CERN Open Hardware Licence v1.2. See the `cern_ohl_v_1_2.txt`
 
 The Cascading Hybrid Thermal Scavenger (CHTS) is an advanced, open-source thermal energy harvesting ecosystem designed to capture and repurpose low-to-mid grade waste heat from high-density server deployments and data center exhaust paths. 
 
-Traditional thermal recovery systems often introduce parasitic mechanical load, restrict exhaust velocity, or suffer from low thermodynamic efficiency due to narrow temperature differentials ($\Delta T$). CHTS addresses these limitations by decoupling the harvesting infrastructure from the primary cooling loop and employing a multi-stage, cascading extraction framework:
+Traditional thermal recovery systems often introduce parasitic mechanical load, restrict exhaust velocity, or suffer from low thermodynamic efficiency due to narrow temperature differentials. CHTS addresses these limitations by decoupling the harvesting infrastructure from the primary cooling loop and employing a multi-stage, cascading extraction framework:
 
 1. **Primary Stage (High-Grade Solid-State Core):** Employs an ultra-low boiling point immiscible fluid mixture within a closed fluid circuit. Phase change expansion accelerates the working fluid through micro-channels across a high-flux magnetic field, leveraging magnetohydrodynamics (MHD) to generate direct electrical current (DC). This stage operates completely solid-state, eliminating mechanical wear, friction losses, and moving parts.
 
@@ -39,7 +39,7 @@ To mathematically validate and scale this physics framework, the `/variables` wo
 
 ## 🚀 Global Scaling & Alternative Applications
 
-While the baseline configurations of the Cascading Hybrid Thermal Scavenger are fine-tuned for low-to-mid grade data center exhaust paths ($60^\circ\text{C}$ to $95^\circ\text{C}$), the underlying solid-state magnetohydrodynamic (MHD) induction framework is built to scale globally. 
+While the baseline configurations of the Cascading Hybrid Thermal Scavenger are fine-tuned for low-to-mid grade data center exhaust paths, the underlying solid-state magnetohydrodynamic (MHD) induction framework is built to scale globally. 
 
 The physics engine is designed to handle high-temperature thermal gradients, making the ecosystem highly adaptable for industrial, automotive, and renewable energy sectors.
 
