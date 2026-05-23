@@ -37,6 +37,22 @@ To mathematically validate and scale this physics framework, the `/variables` wo
 
 ---
 
+## 🚀 Global Scaling & Alternative Applications
+
+While the baseline configurations of the Cascading Hybrid Thermal Scavenger are fine-tuned for low-to-mid grade data center exhaust paths ($60^\circ\text{C}$ to $95^\circ\text{C}$), the underlying solid-state magnetohydrodynamic (MHD) induction framework is built to scale globally. 
+
+The physics engine is designed to handle high-temperature thermal gradients, making the ecosystem highly adaptable for industrial, automotive, and renewable energy sectors.
+
+For technical specifications, fluid variable mapping, and material adjustment profiles across alternative industries, please see the complete [Alternative Applications Guide](APPLICATIONS.md).
+
+Target alternative sectors include:
+* **High-Temperature Industrial Flues:** Blast furnaces, glass manufacturing, and ceramic kilns ($300^\circ\text{C}$ – $700^\circ\text{C}$+).
+* **Heavy-Duty Transportation:** Solid-state co-generation jackets for marine shipping and diesel rail exhaust.
+* **Low-Enthalpy Geothermal Wells:** Open-channel mineral brine harvesting with zero turbine blade fouling.
+* **Concentrated Solar Thermal (CST):** True quantum-to-hydrodynamic hybrid harvesting loops.
+
+---
+
 ## 🗂️ Repository Directory Structure
 
 ```text
@@ -45,6 +61,7 @@ The-Cascading-Hybrid-Thermal-Scavenger/  [VALIDATED 100% COMMIT]
 ├── CONTRIBUTING.md               # Verified (Workflow & Tolerance Norms)
 ├── ohwr.yaml                     # Verified (Open Hardware Manifest Metadata)
 ├── README.md                     # Verified (System Architecture Master Document)
+├── APPLICATIONS.md               # Explains Industrial/Automotive/Geothermal scaling rules
 ├── hardware/
 │   └── SPECIFICATIONS.md         # Verified (Dimensioning, N+1 Layout, & Clearances)
 ├── schematics/
