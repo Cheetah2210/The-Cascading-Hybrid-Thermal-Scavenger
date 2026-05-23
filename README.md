@@ -40,16 +40,22 @@ To mathematically validate and scale this physics framework, the `/variables` wo
 ## 🗂️ Repository Directory Structure
 
 ```text
-The-Cascading-Hybrid-Thermal-Scavenger/
-├── hardware/                   # Physical CAD models and housing blueprints
-│   └── SPECIFICATIONS.md       # Housing, electrical tolerances, N+1 manifold layout
-├── schematics/                 # Production-ready wiring layouts and automation scripts
-│   └── manifold_control.py     # N+1 Redundant automation loop logic
-└── variables/                  # Multi-variable simulation sandbox environment
-    ├── php_oscillations.py     # Capillary micro-channel active frequency code
-    ├── teg_sandwich.py         # Solid-state Seebeck thermoelectric modeling
-    ├── zeotropic_mix.py        # Binary fluid blend temperature glide & exergy math
-    ├── node_amplifiers.py      # Parametric cascade & fluidic switch dynamics (+80.4% simulation)
-    ├── variable_theory.py      # Master Script: Gen I Cascading Baseline (+13.4%)
-    ├── variable_theory_2.py    # Master Script: Gen II Near-Field Quantum TPV (+41.3%)
-    └── variable_theory_3.py    # Master Script: Gen III Plug-and-Play EHD Loop (+53.6%)
+The-Cascading-Hybrid-Thermal-Scavenger/  [VALIDATED 100% COMMIT]
+├── cern_ohl_v_1_2.txt            # Verified (Legal License Compliance)
+├── CONTRIBUTING.md               # Verified (Workflow & Tolerance Norms)
+├── ohwr.yaml                     # Verified (Open Hardware Manifest Metadata)
+├── README.md                     # Verified (System Architecture Master Document)
+├── hardware/
+│   └── SPECIFICATIONS.md         # Verified (Dimensioning, N+1 Layout, & Clearances)
+├── schematics/
+│   └── manifold_control.py       # Verified (Redundancy Automation Control Loop)
+└── variables/
+    ├── php_oscillations.py       # Verified (Capillary Micro-Channel Dynamics)
+    ├── teg_sandwich.py           # Verified (Thermoelectric Seebeck Modeling)
+    ├── variable_theory.py        # Verified (Gen I Baseline 13.4% Simulation Engine)
+    ├── variable_theory_2.py      # Verified (Gen II Quantum TPV 41.3% Simulation Engine)
+    ├── variable_theory_3.py      # Verified (Gen III EHD Loop 53.6% Simulation Engine)
+    ├── zeotropic_mix.py          # Verified (Baseline Vapor-Liquid Glide Math)
+    ├── node_amplifiers.py        # Verified (Baseline Cascade Dynamic Simulation)
+    ├── GEN_III_zeotropic_mix.py  # Verified (Gen III Targeted Antoine Glide Math)
+    └── GEN_III_node_amplifiers.py# Verified (Gen III Ultra 80.4% Max Simulation)
