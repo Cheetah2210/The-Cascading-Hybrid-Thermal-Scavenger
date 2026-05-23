@@ -15,8 +15,10 @@ The physical enclosure is designed to maintain structural integrity under high s
 | **Wall Thickness** | 0.25 inches (6.35 mm) | Provides a safety buffer for operating pressures up to 300 PSI. |
 | **Primary Core Material** | **Borosilicate Glass 3.3** or **PTFE** | High dielectric strength (>20 kV/mm) to prevent electrical arcing to the chassis. |
 | **Outer RF/EMC Shielding** | 6061-T6 Aluminum Mesh Jacket | Grounded Faraday cage to block electromagnetic interference (EMI) from leaking. |
-|
-|  ​Internal Surface Treatment: Atomically Smooth Graphene Oxide (GO) Nano-Coating applied to the inner diameter of the Borosilicate core to establish a hydrophobic slip boundary condition, minimizing viscous shear stress and maximizing fluid kinetic retention. |
+| **Internal Surface Treatment** | **Graphene Oxide (GO) Nano-Coating** | Atomically smooth, hydrophobic layer establishing a slip boundary condition to minimize viscous shear stress and maximize kinetic retention. |
+
+---
+
 ---
 
 ## ⚡ 2. Electrode Geometry & Grid Configuration
