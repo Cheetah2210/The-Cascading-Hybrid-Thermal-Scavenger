@@ -1,4 +1,4 @@
-# variables/GEN III zeotropic_mix.py
+# variables/GEN_III_zeotropic_mix.py
 
 import math
 import logging
