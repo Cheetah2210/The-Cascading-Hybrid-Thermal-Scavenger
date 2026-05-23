@@ -35,7 +35,6 @@ To mathematically validate and scale this physics framework, the `/variables` wo
 | **Generation III** | External Facility Drop-In, Electro-Hydrodynamic (EHD) Phase Boundary Acceleration | **53.6%** | **Committed** | `variables/variable_theory_3.py` |
 | **Gen III Ultra (Max)** | Graphene Slip, Halbach Magnetic Arrays, Dynamic Glide Multipliers, Vortex Amplification | **80.4%** 👑 | **Committed** | `variables/node_amplifiers.py` |
 
-
 ---
 
 ## 🗂️ Repository Directory Structure
@@ -48,7 +47,7 @@ The-Cascading-Hybrid-Thermal-Scavenger/
     ├── php_oscillations.py     # Capillary micro-channel active frequency code
     ├── teg_sandwich.py         # Solid-state Seebeck thermoelectric modeling
     ├── zeotropic_mix.py        # Binary fluid blend temperature glide & exergy math
-    ├── node_amplifiers.py      # Parametric cascade & fluidic switch dynamics (+69.9% simulation)
+    ├── node_amplifiers.py      # Parametric cascade & fluidic switch dynamics (+80.4% simulation)
     ├── variable_theory.py      # Master Script: Gen I Cascading Baseline (+13.4%)
     ├── variable_theory_2.py    # Master Script: Gen II Near-Field Quantum TPV (+41.3%)
     └── variable_theory_3.py    # Master Script: Gen III Plug-and-Play EHD Loop (+53.6%)
