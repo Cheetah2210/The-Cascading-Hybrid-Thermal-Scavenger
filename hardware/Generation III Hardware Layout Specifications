@@ -34,3 +34,29 @@ The fluidic network is split across four parallel MHD cores to sustain facility 
 * **Total Channel Core Span:** $1600\text{ mm}$ centered within the $2000\text{ mm}$ frame boundary.
 * **Inter-Block Centerline Distance:** Exactly $400\text{ mm}$ spacing between the longitudinal centers of adjacent MHD channel blocks.
 * **Maintenance Clearance:** A minimum $120\text{ mm}$ clear horizontal window must be preserved between the external walls of adjacent blocks to allow manual access to the motorized valve actuators.
+
+---
+
+|<────────────────────────────── 2000 mm Frame ──────────────────────────────>|
+|   200 mm   |   400 mm   |   400 mm   |   400 mm   |   400 mm   |   200 mm   |
+|            ▼            ▼            ▼            ▼            |            |
+|        [Block 1]    [Block 2]    [Block 3]    [Block 4]        |            |
+|        |<─120mm─>|               |               |             |            |
+
+---
+
+## 3. High-Voltage Electrical Isolation Boundaries
+
+To ensure safe operation of the Electro-Hydrodynamic (EHD) ionization array, explicit physical clearance zones must be maintained around all conductive surfaces.
+
+* **Ceramic Track Clearance:** The Alumina ($Al_2O_3$) isolation tracks must project a minimum of $15\text{ mm}$ past the ends of the tungsten emitter wires to eliminate surface tracking arcs to the metal frame.
+* **HV Air Gap Boundary:** Maintain a strict $50\text{ mm}$ absolute air gap (or a minimum of $12\text{ mm}$ solid Delrin/PTFE insulation barrier) between the high-voltage distribution node and the low-voltage MHD collection busbars or aluminum chassis panels.
+* **Flush Electrode Depth:** Copper collection plates must be seated into the 3D-printed channel floors matching a tolerance profile of $+0.05\text{ mm} / -0.00\text{ mm}$. No part of the electrode may protrude above the channel surface, preventing localized hydrodynamic cavitation.
+
+---
+
+## 4. Mechanical Fastener & Interface Specs
+
+* **Manifold Couplings:** High-flow, flat-face, dry-break quick disconnect couplings on all branch lines to enable fluid-free isolation of active cores.
+* **Gaskets:** Dual-groove Viton O-Rings (Dash size -222, 75 Shore A Durometer) rated for continuous thermal cycling from $-10^\circ\text{C}$ to $+150^\circ\text{C}$ across zeotropic fluid boundaries.
+* **Chassis Fasteners:** M6 Grade 8.8 hex bolts with nylon-locking nuts, torqued to a maximum specification of $9.5\text{ N}\cdot\text{m}$.
