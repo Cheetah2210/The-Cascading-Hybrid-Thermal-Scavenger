@@ -41,8 +41,10 @@ To mathematically validate and scale this physics framework, the `/variables` wo
 
 ```text
 The-Cascading-Hybrid-Thermal-Scavenger/
-├── hardware/                   # Physical CAD models, PCB routing, and housing blueprints
-│   └── SPECIFICATIONS.md       # Physical housing, electrical tolerances, N+1 manifold layout
+├── hardware/                   # Physical CAD models and housing blueprints
+│   └── SPECIFICATIONS.md       # Housing, electrical tolerances, N+1 manifold layout
+├── schematics/                 # Production-ready wiring layouts and automation scripts
+│   └── manifold_control.py     # N+1 Redundant automation loop logic
 └── variables/                  # Multi-variable simulation sandbox environment
     ├── php_oscillations.py     # Capillary micro-channel active frequency code
     ├── teg_sandwich.py         # Solid-state Seebeck thermoelectric modeling
