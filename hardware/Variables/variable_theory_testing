@@ -1,0 +1,103 @@
+import numpy as np
+
+def simulate_real_mhd_node(fluid_velocity, flux_density, conductivity, properties, geometry, load_factor=0.5):
+    """
+    Quantifies a non-ideal MHD layer by explicitly modeling internal resistance,
+    contact resistance, Hall effects, edge shunting, and Hartmann wall friction.
+    
+    Parameters:
+        properties (dict): Contains fluid density 'rho', viscosity 'nu', 
+                           electron mobility 'mu_e', and 'r_contact' in Ohms.
+    """
+    w = geometry['w']
+    h = geometry['h']
+    L = geometry['L']
+    volume = w * h * L
+    
+    # --- 1. ELECTRICAL LOSS MATRIX ---
+    # Bulk fluid internal resistance
+    r_fluid = w / (conductivity * L * h)
+    # Total internal electrical resistance
+    r_internal = r_fluid + (2.0 * properties['r_contact'])
+    
+    # --- 2. PHYSICALLY BOUNDED DERATING FACTORS ---
+    # Hall effect penalty
+    beta = properties['mu_e'] * flux_density
+    f_hall = 1.0 / (1.0 + beta**2)
+    
+    # End-current shunting edge loss factor
+    f_edge = 1.0 / (1.0 + (w / L) * np.log(2))
+    
+    # Combined non-ideal efficiency scaling
+    systemic_derating = f_hall * f_edge
+    
+    # --- 3. REVISED VOLTAGE & POWER EXTRACTION ---
+    # Ideal Open Circuit Voltage
+    v_oc_ideal = fluid_velocity * flux_density * w
+    # Realized Open Circuit Voltage after boundary/magnetic losses
+    v_oc_real = v_oc_ideal * systemic_derating
+    
+    # Net Terminal Voltage delivered to load
+    v_terminal = v_oc_real * load_factor
+    
+    # Actual induced current accounting for internal resistance drop
+    # I = (V_oc_real - V_terminal) / R_internal
+    induced_current = (v_oc_real - v_terminal) / r_internal
+    
+    # Net Electrical Power Output
+    net_power_output = induced_current * v_terminal
+    power_density = net_power_output / volume
+    
+    # --- 4. ADVANCED HYDRAULIC PENALTY (HARTMANN FRICTION) ---
+    # Hartmann Number calculation: Ratio of electromagnetic braking to viscous forces
+    hartmann = flux_density * h * np.sqrt(conductivity / (properties['rho'] * properties['nu']))
+    
+    # Electromagnetic pressure drop
+    pressure_drop_mhd = induced_current * flux_density * L / (L * h)
+    
+    # Hartmann velocity profile friction modification
+    # Scales baseline laminar/turbulent pressure drop by friction multiplication
+    friction_multiplier = hartmann / (np.tanh(hartmann) - (1.0 / hartmann)) if hartmann > 0 else 1.0
+    pressure_drop_friction = (properties['rho'] * (fluid_velocity**2) / 2) * (L / h) * (0.02 * friction_multiplier)
+    
+    total_pressure_drop = pressure_drop_mhd + pressure_drop_friction
+
+    return {
+        "r_internal_ohms": r_internal,
+        "v_oc_real_V": v_oc_real,
+        "induced_current_A": induced_current,
+        "net_power_W": net_power_output,
+        "power_density_MW_m3": power_density / 1e6,
+        "total_pressure_drop_kPa": total_pressure_drop / 1000,
+        "edge_loss_factor": f_edge,
+        "hall_loss_factor": f_hall
+    }
+
+# --- REALISTIC SENSOR VERIFICATION RUN ---
+if __name__ == "__main__":
+    # Fluid: Galinstan Baseline with engineering boundary conditions
+    galinstan_props = {
+        'rho': 6440.0,       # kg/m³
+        'nu': 3.73e-7,       # Kinematic viscosity (m²/s)
+        'mu_e': 1.2e-4,      # Electron mobility (m²/V·s)
+        'r_contact': 1.5e-4  # 0.15 mOhm structural electrode contact fouling layer
+    }
+    
+    channel_geom = {'w': 0.025, 'h': 0.010, 'L': 0.120}
+    
+    metrics = simulate_real_mhd_node(
+        fluid_velocity=3.0,
+        flux_density=1.2,     # 1.2T Permanent Magnet Array
+        conductivity=3.46e6,  # S/m
+        properties=galinstan_props,
+        geometry=channel_geom,
+        load_factor=0.5
+    )
+    
+    print("=== NON-IDEAL BOUNDED MHD PERFORMANCES ===")
+    print(f"Internal Resistance:  {metrics['r_internal_ohms']*1000:.4f} mΩ")
+    print(f"Derated Real V_oc:    {metrics['v_oc_real_V']:.4f} V")
+    print(f"Net Induced Current:  {metrics['induced_current_A']:.2f} A")
+    print(f"Net Useful Power:     {metrics['net_power_W']:.2f} W")
+    print(f"Total Pressure Drop:  {metrics['total_pressure_drop_kPa']:.2f} kPa")
+    print(f"Edge Shunting Loss:   {(1 - metrics['edge_loss_factor'])*100:.1f}% reduction")
