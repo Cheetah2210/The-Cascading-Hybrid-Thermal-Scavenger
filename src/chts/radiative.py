@@ -1,9 +1,13 @@
-def blackbody_peak_wavelength(temperature):
-    """Wien's Displacement Law: Determines peak emission wavelength (meters)."""
-    wien_constant = 2.897771955e-3
-    return wien_constant / temperature
-
-def narrowband_photon_flux(temperature, wavelength_start, wavelength_end):
-    """Integrates targeted bandwidth fields to optimize bandgap matching."""
-    # Placeholder for numerical integration of Planck's Law across structural gaps
-    pass
+def near_field_radiative_enhancement(gap_distance, characteristic_wavelength):
+    """
+    Approximates the near-field radiative enhancement factor due to photon tunneling.
+    Far-field limit is 1.0. Near-field scales dramatically as gap d << wavelength.
+    """
+    if gap_distance <= 0:
+        raise ValueError("Gap distance must be greater than zero.")
+        
+    if gap_distance < characteristic_wavelength:
+        # Simplification of evanescent wave coupling enhancement
+        enhancement = (characteristic_wavelength / gap_distance)**2
+        return min(enhancement, 1000.0)  # Bound by physical material saturation limits
+    return 1.0
