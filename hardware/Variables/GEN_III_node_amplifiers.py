@@ -1,125 +1,142 @@
-# variables/GEN_III_node_amplifiers.py
+import numpy as np
+from variables.variable_theory_testing import simulate_real_mhd_node
 
-import math
-import logging
-
-# Set up logging for the Gen III Ultra physics engine
-logging.basicConfig(level=logging.INFO, format='%(message)s')
-
-class GenIIIUltraAmplifierSimulator:
+class CascadedExergyOrchestrator:
     """
-    Simulates the peak-tier Gen III Ultra architecture using fluidic slip boundaries,
-    vortex amplification, and Halbach-array field optimizations.
+    Orchestrates a multi-stage thermal cascade. Evaluates sequential energy 
+    extraction across non-ideal fluidic, solid-state, and radiative boundaries.
     """
-    def __init__(self, channel_width_mm=15.0):
-        self.w = channel_width_mm / 1000.0  # Convert channel width to meters
-        self.fluid_density = 1250.0        # Phase-average density (kg/m³)
+    def __init__(self, t_source, t_ambient, initial_heat_flux):
+        self.t_source = t_source        # K (Primary High-Temp Node)
+        self.t_ambient = t_ambient      # K (Ultimate Environmental Sink)
+        self.q_in = initial_heat_flux   # Watts (Input thermal capacity)
         
-        # --- Advanced Ultra-Track Constants ---
-        self.graphene_slip_factor = 0.05    # Near-zero boundary drag coefficient (95% friction reduction)
-        self.halbach_peak_flux = 2.1        # Concentrated magnetic flux density (Tesla)
-        self.vortex_gain_coefficient = 1.65 # Fluidic swirl kinetic energy multiplier
+        self.nodes = []
+        self.extracted_power = []
+        self.rejected_heat = [initial_heat_flux]
+        self.node_temperatures = [t_source]
 
-    def calculate_vortex_acceleration(self, baseline_velocity, applied_voltage_kv):
+    def process_mhd_stage(self, name, velocity, flux_density, conductivity, fluid_props, geometry):
         """
-        Calculates fluid velocity gains by combining Electro-Hydrodynamic (EHD) 
-        forces with passive vortex amplification geometry.
+        Processes the Gen III MHD fluid layer. Captures realistic electrical power 
+        and extracts the hydraulic pumping work penalty from the net energy yield.
         """
-        voltage_v = applied_voltage_kv * 1000.0
-        permittivity_0 = 8.854e-12
-        dielectric_constant = 2.1
-        permittivity = permittivity_0 * dielectric_constant
+        current_q_in = self.rejected_heat[-1]
+        t_current = self.node_temperatures[-1]
         
-        # Electric field strength across the optimized ionization grid boundary
-        electric_field = voltage_v / 0.10  
-        ehd_force_density = 0.5 * permittivity * (electric_field ** 2)
+        # Calculate local Carnot limit for validation reporting
+        local_carnot = 1.0 - (self.t_ambient / t_current)
         
-        # Standard EHD velocity gain
-        ehd_velocity_gain = math.sqrt((2.0 * ehd_force_density * 0.10) / self.fluid_density)
+        # Invoke the non-ideal MHD simulation engine
+        mhd_metrics = simulate_real_mhd_node(
+            fluid_velocity=velocity,
+            flux_density=flux_density,
+            conductivity=conductivity,
+            properties=fluid_props,
+            geometry=geometry,
+            load_factor=0.5  # Matched load optimization
+        )
         
-        # Apply Vortex Amplification geometry and Graphene Boundary Slip
-        # Friction reduction allows a significant increase in cumulative kinetic retention
-        boosted_velocity = (baseline_velocity + ehd_velocity_gain) * self.vortex_gain_coefficient
-        final_velocity = boosted_velocity / (1.0 - self.graphene_slip_factor)
+        # Factor in mechanical pumping work overhead to find NET electrical power.
+        # W_pump = Volume_flow_rate * Delta_P = (w * h * velocity) * Total_Pressure_Drop
+        v_flow_rate = geometry['w'] * geometry['h'] * velocity
+        pumping_power_penalty = v_flow_rate * (mhd_metrics['total_pressure_drop_kPa'] * 1000)
         
-        return {
-            "raw_ehd_gain_m_s": ehd_velocity_gain,
-            "ultra_boosted_velocity_m_s": final_velocity
-        }
+        net_stage_power = mhd_metrics['net_power_W'] - pumping_power_penalty
+        
+        # Guardrail: If drag penalties completely overwhelm generation, clip output to zero
+        net_stage_power = max(0.0, net_stage_power)
+        
+        # Energy Balance (1st Law): Q_out = Q_in - W_net
+        current_q_out = current_q_in - net_stage_power
+        
+        # Predict temperature drop based on extracted energy and bulk properties
+        # Approximated via a standard non-linear thermal degradation curve
+        t_next = max(t_current * (current_q_out / current_q_in)**0.25, self.t_ambient)
+        
+        # Append data to the cascade registry
+        self.nodes.append(name)
+        self.extracted_power.append(net_stage_power)
+        self.rejected_heat.append(current_q_out)
+        self.node_temperatures.append(t_next)
 
-    def simulate_ultra_mhd_node(self, final_velocity, fluid_conductivity=0.22):
+    def process_solid_state_stage(self, name, analytical_efficiency):
         """
-        Calculates power output across the channel utilizing the high-flux Halbach array 
-        and flush-mounted low-resistance copper electrode plates.
+        Processes downstream solid-state elements (TEG layers/Radiative blocks).
+        Bounded by localized temperature-dependent ceilings.
         """
-        # Faraday's Law adjusted for Halbach array flux concentration: V_oc = B_halbach * w * v
-        open_circuit_voltage = self.halbach_peak_flux * self.w * final_velocity
+        current_q_in = self.rejected_heat[-1]
+        t_current = self.node_temperatures[-1]
         
-        # Channel dimension specs for internal resistance mapping
-        channel_length = 0.40
-        channel_depth = 0.01
+        local_carnot = 1.0 - (self.t_ambient / t_current)
         
-        # Electrical resistance calculation across the optimized fluid column
-        internal_resistance = self.w / (fluid_conductivity * channel_length * channel_depth)
+        # Enforce the Second Law constraint dynamically
+        if analytical_efficiency >= local_carnot:
+            analytical_efficiency = local_carnot * 0.85  # Bound to real-world operational degradation
+            
+        net_stage_power = current_q_in * analytical_efficiency
+        current_q_out = current_q_in - net_stage_power
+        t_next = max(t_current * (current_q_out / current_q_in)**0.25, self.t_ambient)
         
-        # Maximum power extraction at load-matched conditions (P = V_oc^2 / 4R)
-        max_power_output_w = (open_circuit_voltage ** 2) / (4.0 * internal_resistance)
-        
-        return {
-            "open_circuit_voltage_v": open_circuit_voltage,
-            "internal_resistance_ohms": internal_resistance,
-            "power_output_watts": max_power_output_w
-        }
+        self.nodes.append(name)
+        self.extracted_power.append(net_stage_power)
+        self.rejected_heat.append(current_q_out)
+        self.node_temperatures.append(t_next)
 
-    def execute_ultra_matrix(self, baseline_velocity_m_s, applied_voltage_kv, exergy_pool_kj_kg):
-        """Runs the unified mathematical analysis for the Gen III Ultra configuration."""
+    def generate_system_report(self):
+        """Validates global metrics and outputs the system energy balance log."""
+        total_net_power = sum(self.extracted_power)
+        global_efficiency = total_net_power / self.q_in
+        global_carnot = 1.0 - (self.t_ambient / self.t_source)
         
-        # 1. Process advanced fluidics and magnetic induction steps
-        velocity_data = self.calculate_vortex_acceleration(baseline_velocity_m_s, applied_voltage_kv)
-        final_v = velocity_data["ultra_boosted_velocity_m_s"]
-        mhd_data = self.simulate_ultra_mhd_node(final_v)
+        print("\n=======================================================")
+        print("   CHTS GENERATION III SYSTEM DEEP EXERGY ANALYSIS")
+        print("=======================================================")
+        print(f"Primary Thermal Source:   {self.t_source:.1f} K")
+        print(f"Ambient Environment Sink: {self.t_ambient:.1f} K")
+        print(f"Initial Heat Input:       {self.q_in / 1000:.2f} kW")
+        print("-------------------------------------------------------")
         
-        # 2. Scale up across the 4-manifold facility array
-        total_facility_power_w = mhd_data["power_output_watts"] * 4
-        
-        # 3. Apply Dynamic Glide Multipliers to exergy valuation
-        # Simulates non-isothermal phase efficiency tracking across variable server thermal loads
-        mass_flow_rate = 0.45  # kg/s total system mass throughput
-        available_power_w = exergy_pool_kj_kg * mass_flow_rate * 1000.0
-        
-        # Calculate ultimate system return efficiency
-        ultra_efficiency = (total_facility_power_w / available_power_w) * 100.0
-        
-        # Enforce physical simulation ceiling capped at design spec limits
-        if ultra_efficiency > 80.4:
-            ultra_efficiency = 80.4
+        for i, stage in enumerate(self.nodes):
+            print(f"Node [{i+1}] {stage.ljust(22)}: Net Power = {self.extracted_power[i]:.2f} W | Boundary Temp = {self.node_temperatures[i+1]:.1f} K")
+            
+        print("-------------------------------------------------------")
+        print(f"Total System Net Power:   {total_net_power / 1000:.3f} kW")
+        print(f"Residual System Waste:    {self.rejected_heat[-1] / 1000:.3f} kW")
+        print(f"Realized Net Efficiency:  {global_efficiency * 100:.2f}%")
+        print(f"Absolute Carnot Ceiling:  {global_carnot * 100:.2f}%")
+        print(f"Thermodynamic Integrity:  {'PASSED' if global_efficiency < global_carnot else 'FAILED'}")
+        print("=======================================================\n")
 
-        # Log metrics to workspace console
-        logging.info("=========================================================")
-        logging.info(" MASTER SIMULATION: GENERATION III ULTRA TRACK (MAX RECOVERY)")
-        logging.info("=========================================================")
-        logging.info(f"Boundary Layer Slip Profile   : Graphene Enabled (95% reduction)")
-        logging.info(f"Magnetic Vector Configuration : Halbach Array Array ({self.halbach_peak_flux}T Peak)")
-        logging.info(f"Vortex Amplification Multiplier: {self.vortex_gain_coefficient}x Kinetic Gain")
-        logging.info(f"Accelerated Terminal Velocity : {final_v:.2f} m/s")
-        logging.info(f"MHD Induced Potential (V_oc)  : {mhd_data['open_circuit_voltage_v']:.4f} V")
-        logging.info(f"Single Module Array Return    : {mhd_data['power_output_watts']:.2f} W")
-        logging.info(f"Total Facility Output (4x Cores): {total_facility_power_w:.2f} W")
-        logging.info(f"Gen III Ultra Efficiency Yield: {ultra_efficiency:.1f}% (Benchmark: 80.4%)")
-        logging.info("=========================================================\n")
-        
-        return ultra_efficiency
-
-# ---------------------------------------------------------------------------
-# Test Verification Run
-# ---------------------------------------------------------------------------
+# --- CASCADE EVALUATION RUN ---
 if __name__ == "__main__":
-    # Initialize ultra simulator block
-    ultra_simulator = GenIIIUltraAmplifierSimulator(channel_width_mm=15.0)
+    # Define primary thermal cluster baseline (1200K source, 300K ambient, 10kW initial flux)
+    cascade = CascadedExergyOrchestrator(t_source=1200.0, t_ambient=300.0, initial_heat_flux=10000.0)
     
-    # Execute matrix verification pass matching peak system inputs
-    ultra_simulator.execute_ultra_matrix(
-        baseline_velocity_m_s=3.2, 
-        applied_voltage_kv=18.5, 
-        exergy_pool_kj_kg=125.4
+    # Establish fluidic parameters matching our non-ideal variable_theory_3 module
+    galinstan_boundary_props = {
+        'rho': 6440.0,
+        'nu': 3.73e-7,
+        'mu_e': 1.2e-4,
+        'r_contact': 1.5e-4  # 0.15 mOhm contact fouling resistance
+    }
+    mhd_geometry = {'w': 0.025, 'h': 0.010, 'L': 0.120}
+    
+    # Stage 1: The Bounded High-Temperature MHD Loop
+    cascade.process_mhd_stage(
+        name="Gen III EHD/MHD Loop",
+        velocity=3.5,            # m/s fluid speed
+        flux_density=1.2,        # 1.2 Tesla N52 array field
+        conductivity=3.46e6,     # S/m
+        fluid_props=galinstan_boundary_props,
+        geometry=mhd_geometry
     )
+    
+    # Stage 2: Thermoelectric Core (Fed by the residual heat of Stage 1)
+    cascade.process_solid_state_stage("TEG Sandwich Array", analytical_efficiency=0.14)
+    
+    # Stage 3: Low-Temperature Downstream Scavenger Loop
+    cascade.process_solid_state_stage("Fluidic Phase Glide Loop", analytical_efficiency=0.07)
+    
+    # Execute structural report
+    cascade.generate_system_report()
