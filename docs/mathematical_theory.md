@@ -1,7 +1,7 @@
 # The Cascading Hybrid Thermal Scavenger (CHTS)
 ## Comprehensive Mathematical Foundations, Fluidic Physics, and Thermodynamic Theory Documentation
 
-* **Author:** Emily O. (Cheetahs Creations)
+* **Author:** Cheetah's Creations 🌻 
 * **License:** CERN Open Hardware Licence v1.2
 * **Document Version:** V1 (Technical Master Record)
 
