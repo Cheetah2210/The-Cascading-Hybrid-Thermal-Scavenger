@@ -1,13 +1,9 @@
-import numpy as np
-
-SIGMA = 5.670374419e-8  # W/m²·K⁴
-
-def radiative_flux(t_hot, t_cold, emissivity=0.95):
-    """Calculates net radiative heat transfer between two surfaces."""
-    if t_hot < t_cold:
-        raise ValueError("Heat source temperature must exceed sink temperature.")
-    return emissivity * SIGMA * (t_hot**4 - t_cold**4)
-
-def conductive_flux(t_hot, t_cold, k_material, thickness, area=1.0):
-    """Calculates one-dimensional steady-state conduction (Fourier's Law)."""
-    return (k_material * area * (t_hot - t_cold)) / thickness
+def graphene_augmented_flux(t_hot, t_cold, base_resistance, enhancement_factor=1.0):
+    """
+    Calculates heat flux across a boundary layer augmented by graphene structures.
+    Enhancement factor represents fluidic vortex mixing or surface area expansion.
+    """
+    # Graphene/vortices reduce effective thermal resistance, accelerating flux Q = dT / R_eff
+    effective_resistance = base_resistance / max(1.0, enhancement_factor)
+    q_flux = (t_hot - t_cold) / effective_resistance
+    return q_flux
